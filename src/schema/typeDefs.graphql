@@ -1,0 +1,134 @@
+type Query {
+  getCustomerOrders(customerId: String, isActive: Boolean): OrderRes
+  getStaffOrders(staffId: String, isActive: Boolean): OrderRes
+  getAllOrders(isActive: Boolean): OrderRes #if isActive returns active orders
+  getCustomerInfo(customerId: String): AuthResponse
+  getStaffInfo(staffId: String): AuthResponse
+  getAllInventory: InventoryRes
+  getAllStaffs: [User]
+}
+
+type Mutation {
+  customerRegister(
+    phoneNumber: String
+    name: String
+    password: String
+  ): AuthResponse
+  addNewInventory(
+    name: String
+    perUnit: Float
+    price: Float
+    unit: String
+    category: String
+    inStock: Float
+  ): InventoryRes
+  customerLogin(phoneNumber: String, password: String): AuthResponse
+  createStaff(name: String, phoneNumber: String, token: String): AuthResponse
+  staffLogin(token: String): AuthResponse
+  changeOrderStatus(status: String, orderId: String): OrderRes
+  createNewOrder(address: AddressType, cartItems: [CartItemInput]): OrderRes
+  assignStaffOrder(staffId: String, orderId: String): OrderRes
+  updateCustomerAccount(
+    name: String
+    phoneNumber: String
+    address: AddressType
+    customerId: String
+  ): AuthResponse
+  updateStaffAccount(
+    name: String
+    phoneNumber: String
+    token: String
+    accountType: String
+    isActive: Boolean
+    status: String
+    staffId: String
+  ): AuthResponse
+}
+
+type AuthResponse {
+  user: User
+  error: Error
+  jwtToken: String
+}
+
+input AddressType {
+  name: String
+  addressLine: String
+  landmark: String
+  phoneNumber: String
+}
+
+# type Address {
+#   name: String
+#   addressLine: String
+#   landmark: String
+#   phoneNumber: String
+# }
+
+type User {
+  id: String
+  name: String
+  phoneNumber: String
+  address: String
+
+  #for staffs alone
+  token: String
+  isActive: Boolean
+  status: String
+  accountType: String
+}
+
+type OrderRes {
+  error: Error
+  orders: [Order]
+}
+
+type InventoryRes {
+  error: Error
+  inventory: [Inventory]
+}
+
+type Order {
+  id: String
+  orderNo: String
+  address: String
+  staff: User
+  customer: User
+  cartItems: [CartItem]
+  status: String
+  datePlaced: String
+  updatedDate: String
+  totalPrice: Float
+}
+
+type CartItem {
+  id: String
+  name: String
+  category: String
+  price: Float
+  quantity: Float
+  perUnitPrice: Float
+}
+
+input CartItemInput {
+  itemId: String
+  price: Float
+  quantity: Float
+  perUnitPrice: Float
+}
+
+type Inventory {
+  id: String
+  name: String
+  price: Float
+  perUnit: Float
+  unit: String
+  category: String
+  inStock: Float
+  photoUrl: String
+}
+
+type Error {
+  path: String
+  message: String
+}
