@@ -89,12 +89,12 @@ async function changeOrderStatus(_, { status, orderId }, { staff }) {
   order.status = status;
   await order.save();
 
-  return { order: [order] };
+  return { orders: [order] };
 }
 
 type createNewOrderType = {
   address: addressType;
-  cartItems: JSON;
+  cartItems: {}[];
 };
 
 async function createNewOrder(
@@ -107,7 +107,7 @@ async function createNewOrder(
 
   let totalPrice = 0;
 
-  cartItems['value'].forEach(item => {
+  cartItems.forEach(item => {
     totalPrice += item['price'];
   });
   const cart = JSON.stringify(cartItems);
@@ -122,7 +122,9 @@ async function createNewOrder(
   });
 
   await order.save();
-  return { order: [order] };
+  console.log(order);
+
+  return { orders: [order] };
 }
 
 async function assignStaffOrder(
@@ -138,7 +140,7 @@ async function assignStaffOrder(
   order.staff = staff;
   await order.save();
 
-  return { order: [order] };
+  return { orders: [order] };
 }
 
 export default resolvers;

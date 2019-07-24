@@ -28,17 +28,22 @@ async function getStaffInfo(_, { staffId }, { staff }: contextType) {
 }
 
 /* ------------------------GET_ALL_STAFFS--------------------------- */
-async function getAllStaffs(_, {}, {  }: contextType) {
+async function getAllStaffs(_, {}, {}) {
   const staff = await Staff.find({});
   return staff;
 }
 
 //Mutation
 /* ----------------------CREATE_STAFF--------------------------- */
-type createStaffType = { name: string; phoneNumber: string; token: string };
+type createStaffType = {
+  name: string;
+  phoneNumber: string;
+  token: string;
+  accountType: string;
+};
 async function createStaff(
   _,
-  { name, phoneNumber, token }: createStaffType,
+  { name, phoneNumber, token, accountType }: createStaffType,
   { staff }
 ) {
   //TODO: clarify the doubt of account type
@@ -46,7 +51,6 @@ async function createStaff(
     return { error: { path: 'createStaff', message: 'NO_ACCESS' } };
 
   //TODO: generate all the elements
-  const accountType = 'staff';
   const isActive = true;
   const status = 'ON SITE';
   const newStaff = Staff.create({
@@ -82,12 +86,14 @@ async function updateStaffAccount(
   { name, phoneNumber, token, accountType, isActive, status, staffId },
   { staff }: contextType
 ) {
+
   if (staff.accountType != ACCOUNT_TYPE.GOD_ADMIN && staffId)
     return { error: { path: 'updateStaffAccount', message: 'NO ACCESS' } };
 
   if (staffId) {
     staff = await Staff.findOne({ id: staffId });
   }
+
 
   if (name) staff.name = name;
   if (phoneNumber) staff.phoneNumber = phoneNumber;

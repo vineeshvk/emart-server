@@ -23,7 +23,12 @@ type Mutation {
     inStock: Float
   ): InventoryRes
   customerLogin(phoneNumber: String, password: String): AuthResponse
-  createStaff(name: String, phoneNumber: String, token: String): AuthResponse
+  createStaff(
+    name: String
+    phoneNumber: String
+    token: String
+    accountType: String
+  ): AuthResponse
   staffLogin(token: String): AuthResponse
   changeOrderStatus(status: String, orderId: String): OrderRes
   createNewOrder(address: AddressType, cartItems: [CartItemInput]): OrderRes
@@ -45,6 +50,7 @@ type Mutation {
   ): AuthResponse
 }
 
+# TODO: update(Invetory) delete(staff,custo,inventory)
 type AuthResponse {
   user: User
   error: Error
@@ -94,7 +100,7 @@ type Order {
   address: String
   staff: User
   customer: User
-  cartItems: [CartItem]
+  cartItems: String
   status: String
   datePlaced: String
   updatedDate: String
@@ -114,7 +120,7 @@ input CartItemInput {
   itemId: String
   price: Float
   quantity: Float
-  perUnitPrice: Float
+  # perUnitPrice: Float
 }
 
 type Inventory {

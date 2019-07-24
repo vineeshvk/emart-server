@@ -25,16 +25,22 @@ export async function startServer(port: string) {
 }
 
 const getUser = async (token: string) => {
-  if (!token) return { customer: null, staff: null };
+  try {
+    if (!token) return { customer: null, staff: null };
 
-  const [Bearer, jwt] = token.split(' ');
+    const [Bearer, jwt] = token.split(' ');
 
-  const id = decode(jwt);
-  if (!Bearer || !id) return null;
-  //@ts-ignore
-  const customer = await Customer.findOne({ id: id.id });
-  //@ts-ignore
-  const staff = await Staff.findOne({ id: id.id });
+    const id = decode(jwt);
+    if (!Bearer || !id) return null;
+    //@ts-ignore
+    var customer = await Customer.findOne({ id: id.id });
+    //@ts-ignore
+    var staff = await Staff.findOne({ id: id.id });
 
-  return { customer, staff };
+    return { customer, staff };
+  } catch (e) {
+    console.log('ERROR' + e);
+
+    return { customer, staff };
+  }
 };
