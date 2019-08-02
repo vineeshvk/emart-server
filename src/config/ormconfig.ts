@@ -3,6 +3,7 @@ import { Customer } from '../entity/Customer';
 import { Inventory } from '../entity/Inventory';
 import { Order } from '../entity/Order';
 import { Staff } from '../entity/Staff';
+import { Image } from '../entity/Image';
 
 const docker = {
   host: 'postgres',
@@ -32,7 +33,8 @@ export const dbconfig: ConnectionOptions = {
   type: 'postgres',
   synchronize: true,
   logging: false,
-  entities: [Customer, Order, Staff, Inventory],
+
+  entities: [Customer, Order, Staff, Inventory, Image],
   dropSchema: false,
   migrations: ['src/migration/**/*.ts'],
   subscribers: ['src/subscriber/**/*.ts'],

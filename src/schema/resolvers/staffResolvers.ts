@@ -12,7 +12,7 @@ const resolvers = {
     createStaff,
     staffLogin,
     updateStaffAccount,
-    // disableAccount: 11,
+    disableAccount,
   },
 };
 
@@ -86,14 +86,12 @@ async function updateStaffAccount(
   { name, phoneNumber, token, accountType, isActive, status, staffId },
   { staff }: contextType
 ) {
-
   if (staff.accountType != ACCOUNT_TYPE.GOD_ADMIN && staffId)
     return { error: { path: 'updateStaffAccount', message: 'NO ACCESS' } };
 
   if (staffId) {
     staff = await Staff.findOne({ id: staffId });
   }
-
 
   if (name) staff.name = name;
   if (phoneNumber) staff.phoneNumber = phoneNumber;
@@ -107,6 +105,16 @@ async function updateStaffAccount(
   return { user: staff };
 }
 
-async function disableAccount(_, { staffId }, { staff, customer }) {}
+async function disableAccount(_, { staffId }, { staff }: contextType) {
+  if (staff.accountType != ACCOUNT_TYPE.GOD_ADMIN)
+    return { error: { path: 'disableStaffAccount', message: 'NO ACCESS' } };
+
+  staff = await Staff.findOne({ id: staffId });
+
+  staff.isActive = false;
+  await staff.save();
+
+  return { user: staff };
+}
 
 export default resolvers;

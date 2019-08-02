@@ -4,6 +4,8 @@ import { Customer } from '../../entity/Customer';
 import { Order } from '../../entity/Order';
 import { Staff } from '../../entity/Staff';
 import { addressType } from './customerResolvers';
+import { ACCOUNT_TYPE, ORDER_STATUS } from '../../config/constants';
+import { STATUS_CODES } from 'http';
 
 const resolvers = {
   Query: {
@@ -72,17 +74,21 @@ async function getAllOrders(_, { isActive }, { staff }: contextType) {
     .createQueryBuilder('orders')
     .leftJoinAndSelect('orders.customer', 'customer')
     .leftJoinAndSelect('orders.staff', 'staff')
+    .orderBy('orders.updatedDate', 'ASC')
     .getMany();
 
   if (isActive) orders = orders.filter(order => order.status === 'ACTIVE');
-
   return { orders };
 }
 
 // Mutation
 /* ------------------------CHANGE_ORDER_STATUS----------------------------- */
-async function changeOrderStatus(_, { status, orderId }, { staff }) {
-  if (!staff)
+async function changeOrderStatus(
+  _,
+  { status, orderId },
+  { staff }: contextType
+) {
+  if (!staff && !(Customer && status == ORDER_STATUS.CANCELLED_BY_CUSTOMER))
     return { error: { path: 'changeOrderStatus', message: 'NO_ACCESS' } };
 
   const order = await Order.findOne({ id: orderId });
@@ -115,14 +121,12 @@ async function createNewOrder(
   const order = Order.create({
     address: JSON.stringify(address),
     cartItems: cart,
-    status: 'ORDER_PLACED',
+    status: ORDER_STATUS.PLACED_BY_CUSTOMER,
     totalPrice,
     customer,
-    orderNo: Math.random().toString(),
   });
 
   await order.save();
-  console.log(order);
 
   return { orders: [order] };
 }
@@ -132,12 +136,13 @@ async function assignStaffOrder(
   { staffId, orderId },
   { staff }: contextType
 ) {
-  if (staff.accountType != 'admin')
+  if (staff.accountType != ACCOUNT_TYPE.GOD_ADMIN)
     return { error: { path: 'assignStaffOrder', message: 'NO_ACCESS' } };
 
   staff = await Staff.findOne({ id: staffId });
   const order = await Order.findOne({ id: orderId });
   order.staff = staff;
+  order.status = ORDER_STATUS.RECEIVED_BY_STORE;
   await order.save();
 
   return { orders: [order] };

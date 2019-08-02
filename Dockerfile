@@ -20,7 +20,8 @@ RUN npm install --production
 
 COPY --from=builder /usr/src/app/build ./
 COPY src/schema/typeDefs.graphql ./schema/
-
+COPY assets/placeholder_image.jpg ./
+RUN ls
 EXPOSE 8734
 
 CMD node index.js

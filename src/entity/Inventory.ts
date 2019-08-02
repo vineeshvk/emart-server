@@ -22,7 +22,4 @@ export class Inventory extends BaseEntity {
 
   @Column()
   inStock: number;
-
-  @Column({ nullable: true })
-  photoUrl: string;
 }

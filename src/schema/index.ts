@@ -31,7 +31,7 @@ export type contextType = {
   staff: Staff;
 };
 
-export type CartItemType = {
+ type CartItemType = {
   itemId: string;
   perUnitPrice: number;
   quantity: number;
